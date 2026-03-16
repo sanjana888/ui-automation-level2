@@ -3,11 +3,12 @@ pipeline {
 
     stages {
 
-        stage('Clone Repo') {
-            steps {
-                git 'https://github.com/sanjana888/ui-automation-level2.git'
-            }
-        }
+     stage('Clone Repo') {
+    steps {
+        git branch: 'main',
+            url: 'https://github.com/sanjana888/ui-automation-level2.git'
+    }
+}
 
         stage('Install Dependencies') {
             steps {
