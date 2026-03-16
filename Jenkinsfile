@@ -1,51 +1,43 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.10'
-            args '-u root'
-        }
-    }
+    agent any
 
     stages {
+
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/sanjana888/ui-automation-level2.git'
+            }
+        }
 
         stage('Install Dependencies') {
             steps {
                 sh '''
-                python --version
-                pip install --upgrade pip
-                pip install -r requirements.txt
+                python3 --version
+                pip3 install -r requirements.txt
                 '''
             }
         }
 
-        stage('Run Pytest Tests') {
+        stage('Run Tests') {
             steps {
                 sh '''
-                pytest -n 2 --alluredir=reports/allure-results
+                pytest -n 2 --alluredir=allure-results
                 '''
             }
         }
 
         stage('Generate Allure Report') {
             steps {
-                allure includeProperties: false,
-                       results: [[path: 'reports/allure-results']]
+                sh '''
+                allure generate allure-results --clean -o allure-report
+                '''
             }
         }
-
     }
 
     post {
         always {
-            echo 'Pipeline execution completed.'
-        }
-
-        success {
-            echo 'Tests executed successfully!'
-        }
-
-        failure {
-            echo 'Pipeline failed. Check logs.'
+            archiveArtifacts artifacts: 'allure-report/**', fingerprint: true
         }
     }
 }
