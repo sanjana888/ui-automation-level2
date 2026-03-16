@@ -3,22 +3,22 @@ pipeline {
 
     stages {
 
-     stage('Clone Repo') {
-    steps {
-        git branch: 'main',
-            url: 'https://github.com/sanjana888/ui-automation-level2.git'
-    }
-}
-
-        stage('Install Dependencies') {
+        stage('Install Python & Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh '''
+                python3 --version
+                pip3 --version
+                pip3 install --upgrade pip
+                pip3 install -r requirements.txt
+                '''
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Pytest Tests') {
             steps {
-                sh 'pytest --alluredir=reports/allure-results'
+                sh '''
+                python3 -m pytest -n 2 --alluredir=reports/allure-results
+                '''
             }
         }
 
@@ -28,6 +28,21 @@ pipeline {
                        jdk: '',
                        results: [[path: 'reports/allure-results']]
             }
+        }
+
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution completed.'
+        }
+
+        success {
+            echo 'Tests executed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed. Check logs.'
         }
     }
 }
