@@ -5,7 +5,7 @@ pipeline {
 
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/<username>/ui-automation-level2.git'
+                git 'https://github.com/sanjana888/ui-automation-level2.git'
             }
         }
 
