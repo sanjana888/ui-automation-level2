@@ -1,15 +1,19 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.10'
+            args '-u root'
+        }
+    }
 
     stages {
 
-        stage('Install Python & Dependencies') {
+        stage('Install Dependencies') {
             steps {
                 sh '''
-                python3 --version
-                pip3 --version
-                pip3 install --upgrade pip
-                pip3 install -r requirements.txt
+                python --version
+                pip install --upgrade pip
+                pip install -r requirements.txt
                 '''
             }
         }
@@ -17,7 +21,7 @@ pipeline {
         stage('Run Pytest Tests') {
             steps {
                 sh '''
-                python3 -m pytest -n 2 --alluredir=reports/allure-results
+                pytest -n 2 --alluredir=reports/allure-results
                 '''
             }
         }
@@ -25,7 +29,6 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 allure includeProperties: false,
-                       jdk: '',
                        results: [[path: 'reports/allure-results']]
             }
         }
